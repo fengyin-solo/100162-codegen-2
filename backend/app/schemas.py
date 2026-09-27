@@ -244,3 +244,44 @@ class TrainingEntry(BaseModel):
     field_5: str | None = None  # 考核成绩
     field_6: str | None = None  # 培训日期
     field_7: str | None = None  # 培训状态
+
+
+class LostFoundEntry(BaseModel):
+    """遗失物品明细结构。"""
+
+    field_0: str | None = None  # 登记编号
+    field_1: str | None = None  # 物品名称
+    field_2: str | None = None  # 物品类别
+    field_3: str | None = None  # 捡拾地点
+    field_4: str | None = None  # 捡拾日期
+    field_5: str | None = None  # 保管人
+    field_6: str | None = None  # 认领人
+    field_7: str | None = None  # 证件号
+
+
+class BatchActionPayload(BaseModel):
+    """批量移交/报废提交：一次带上多条记录编号，逐条校验。"""
+
+    action: str
+    ids: list[int] = Field(default_factory=list)
+    values: dict[str, Any] = Field(default_factory=dict)
+
+
+class BatchActionItem(BaseModel):
+    """批量动作中单条记录的校验与处理结果。"""
+
+    id: int
+    ok: bool
+    message: str
+    entry: dict[str, Any] | None = None
+
+
+class BatchActionResult(BaseModel):
+    """批量动作汇总：每条记录各给一份结果，失败只跳过该条。"""
+
+    ok: bool = True
+    action: str
+    total: int
+    success: int
+    failed: int
+    items: list[BatchActionItem] = Field(default_factory=list)
