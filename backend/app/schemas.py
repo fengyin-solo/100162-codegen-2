@@ -244,3 +244,36 @@ class TrainingEntry(BaseModel):
     field_5: str | None = None  # 考核成绩
     field_6: str | None = None  # 培训日期
     field_7: str | None = None  # 培训状态
+
+
+class LostFoundClaimPayload(BaseModel):
+    """旅客认领时提交的身份信息。"""
+
+    认领人: str = Field(min_length=1)
+    证件号: str = Field(min_length=1)
+    备注: str | None = None
+
+
+class LostFoundBatchPayload(BaseModel):
+    """批量移交或报废请求；逐条校验，不做整单事务回滚。"""
+
+    ids: list[int] = Field(default_factory=list)
+    接收人: str | None = None
+    移交地点: str | None = None
+    报废原因: str | None = None
+    备注: str | None = None
+
+
+class LostFoundBatchItemResult(BaseModel):
+    id: int
+    ok: bool
+    message: str
+    entry: dict[str, Any] | None = None
+
+
+class LostFoundBatchResult(BaseModel):
+    ok: bool
+    action: str
+    results: list[LostFoundBatchItemResult]
+    success_count: int
+    failure_count: int
